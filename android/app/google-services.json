@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "683435342638",
+    "project_id": "handongmanna-17a93",
+    "storage_bucket": "handongmanna-17a93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683435342638:android:fd4b68b9b193facea318bf",
+        "android_client_info": {
+          "package_name": "com.example.handong_manna"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683435342638-cvtehe6k2i28c016em1tn7eo4l5k0of3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzjsJapURgARoyPvRp9iICH3gm_nwhQ0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683435342638-cvtehe6k2i28c016em1tn7eo4l5k0of3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
