@@ -123,7 +123,7 @@ class _ChatProfilePageState extends State<ChatProfilePage> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Add your button press logic here
-                      Navigator.pushNamed(context, '/edit_profile');
+                      Navigator.pushNamed(context, '/main');
                     },
                     child: Text('채팅방 나가기'),
                     style: ElevatedButton.styleFrom(

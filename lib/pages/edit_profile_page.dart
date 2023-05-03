@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(EditProfilePage());
-}
-
 class EditProfilePage extends StatefulWidget {
   @override
   _EditProfilePageState createState() => _EditProfilePageState();

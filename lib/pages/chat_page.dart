@@ -33,6 +33,7 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: ColorPalette.mainBlue,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0.0,
         backgroundColor: ColorPalette.mainBlue,
         title: Row(

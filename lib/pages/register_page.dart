@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:handong_manna/constants/color_constants.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
@@ -52,121 +53,127 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Scrollbar(
-          thickness: 4.0,
-          radius: Radius.circular(8.0),
-          isAlwaysShown: true,
-          child: ListView(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Form(
-                  key: this.formKey,
-                  child: Column(
-                    children: [
-                      _image != null
-                          ? Image.file(_image!,
-                          width: 250, height: 250, fit: BoxFit.cover)
-                          : Image.file(File('/Users/kite/StudioProjects/register_v1/assets/KakaoTalk_Photo_2023-04-26-10-44-16-removebg-preview.png')),
-                      // Image.network('https://picsum.photos/250?image=9'),
-                      SizedBox(height:30),
-                      Column(
-                          crossAxisAlignment : CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "사진",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
+      appBar: AppBar(
+        backgroundColor: ColorPalette.mainBlue,
+      ),
+        body: ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
+          child: Scrollbar(
+            thickness: 4.0,
+            radius: Radius.circular(8.0),
+            isAlwaysShown: true,
+            child: ListView(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Form(
+                    key: this.formKey,
+                    child: Column(
+                      children: [
+                        _image != null
+                            ? Image.file(_image!,
+                            width: 250, height: 250, fit: BoxFit.cover)
+                            : Image.file(File('assets/HandongMannaLogo.png')),
+                        // Image.network('https://picsum.photos/250?image=9'),
+                        SizedBox(height:30),
+                        Column(
+                            crossAxisAlignment : CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "사진",
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 30),
-                            CustomButton(
-                              title: "Pick an Image",
-                              icon: Icons.image_outlined,
-                              onClick: () => getImage(ImageSource.gallery),
-                            ),
-                            SizedBox(height: 30),
-                            renderTextFormField(
-                              label: '이름',
-                              onSaved: (val) {
-                                setState(() {
-                                  this.name = val;
-                                });
-                              },
-                              validator: (val) {
-                                if (val.length < 1) {
-                                  return '필수 필드입니다.';
-                                }
-                                return null;
-                              },
-                            ),
-                            renderTextFormField(
-                              label: '학번',
-                              onSaved: (val) {
-                                setState(() {
-                                  this.student_id = val;
-                                });
-                              },
-                              validator: (val) {
-                                if (val.length < 1) {
-                                  return '필수 필드입니다.';
-                                }
-                                return null;
-                              },
-                            ),
-                            renderTextFormField(
-                              label: '나이',
-                              onSaved: (val) {
-                                setState(() {
-                                  this.age = val;
-                                });
-                              },
-                              validator: (val) {
-                                if (val.length < 1) {
-                                  return '필수 필드입니다.';
-                                }
-                                return null;
-                              },
-                            ),
-                            renderTextFormField(
-                              label: '전공/직업',
-                              onSaved: (val) {
-                                setState(() {
-                                  this.major = val;
-                                });
-                              },
-                              validator: (val) {
-                                if (val.length < 1) {
-                                  return '필수 필드입니다.';
-                                }
-                                return null;
-                              },
-                            ),
+                              SizedBox(height: 30),
+                              CustomButton(
+                                title: "Pick an Image",
+                                icon: Icons.image_outlined,
+                                onClick: () => getImage(ImageSource.gallery),
+                              ),
+                              SizedBox(height: 30),
+                              renderTextFormField(
+                                label: '이름',
+                                onSaved: (val) {
+                                  setState(() {
+                                    this.name = val;
+                                  });
+                                },
+                                validator: (val) {
+                                  if (val.length < 1) {
+                                    return '필수 필드입니다.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              renderTextFormField(
+                                label: '학번',
+                                onSaved: (val) {
+                                  setState(() {
+                                    this.student_id = val;
+                                  });
+                                },
+                                validator: (val) {
+                                  if (val.length < 1) {
+                                    return '필수 필드입니다.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              renderTextFormField(
+                                label: '나이',
+                                onSaved: (val) {
+                                  setState(() {
+                                    this.age = val;
+                                  });
+                                },
+                                validator: (val) {
+                                  if (val.length < 1) {
+                                    return '필수 필드입니다.';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              renderTextFormField(
+                                label: '전공/직업',
+                                onSaved: (val) {
+                                  setState(() {
+                                    this.major = val;
+                                  });
+                                },
+                                validator: (val) {
+                                  if (val.length < 1) {
+                                    return '필수 필드입니다.';
+                                  }
+                                  return null;
+                                },
+                              ),
 
-                          ]),
+                            ]),
 
-                      // renderTextFormField(
-                      //   label: '사진',
-                      //   onSaved: (val) {
-                      //     setState(() {
-                      //       this.photo = val;
-                      //     });
-                      //   },
-                      //   validator: (val) {
-                      //     if(val.length < 1){
-                      //       return '필수 필드입니다.' ;
-                      //     }
-                      //     return null;
-                      //   },
-                      // ), // 여기에 폼을 작성할거예요!
-                      renderSubmitButton(),
-                      renderStates(),
-                    ],
+                        // renderTextFormField(
+                        //   label: '사진',
+                        //   onSaved: (val) {
+                        //     setState(() {
+                        //       this.photo = val;
+                        //     });
+                        //   },
+                        //   validator: (val) {
+                        //     if(val.length < 1){
+                        //       return '필수 필드입니다.' ;
+                        //     }
+                        //     return null;
+                        //   },
+                        // ), // 여기에 폼을 작성할거예요!
+                        renderSubmitButton(),
+                        renderStates(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         )
     );
