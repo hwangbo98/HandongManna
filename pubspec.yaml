@@ -48,6 +48,7 @@ dependencies:
   get: ^4.6.5
   provider: ^4.3.2
   path_provider: ^2.0.14
+  sign_button: ^2.0.3
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,7 @@ flutter:
   assets:
    - assets/HandongMannaLogo.png
    - assets/googleLogo.png
+   - assets/plane.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,67 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_button/sign_button.dart';
 
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Google Sign In Demo',
-      home: Scaffold(
-        // appBar: AppBar(
-        //   title: Text('Google Sign In Demo'),
-        // ),
-        body: ListView(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                    '/Users/kite/StudioProjects/hm_login/assets/KakaoTalk_Photo_2023-04-26-10-44-16-removebg-preview.png'),
-                SizedBox(height: 30,),
-                Text(
-                  'Chat and connect with verified Handong singles seeking serious relationships',
-                  style: TextStyle(fontSize: 15),),
-                SizedBox(height: 30,),
-                GoogleSignInButton(),
-                SizedBox(height: 50,),
-                Text(
-                    'By Signing in, you agree to our Terms and Conditions, Learn how we use your data in our Privacy Policy.'),
-              ],
-            )
-          ],
-        ),
+    return Scaffold(
+      body: ListView(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/HandongMannaLogo.png'),
+              SizedBox(
+                height: 30,
+              ),
+              Text(
+                'Chat and connect with verified Handong singles seeking serious relationships',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              SignInButton(
+                  buttonType: ButtonType.google,
+                  buttonSize: ButtonSize.large,
+                  // small(default), medium, large
+                  onPressed: () {
+                    //여깅에서 로그인 버튼 눌렀을 때 알고리즘 진행하면 됨
+                    // 1. 파이어베이스에 올리기
+                    // 2. SharedPreference로 로그인 token 저장하기(나중에 자동로그인)
+                    Navigator.pushNamed(context, '/main');
+                  }),
+              SizedBox(
+                height: 50,
+              ),
+              Text(
+                'By Signing in, you agree to our Terms and Conditions, Learn how we use your data in our Privacy Policy.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )
+        ],
       ),
-    );
-  }
-}
-
-class GoogleSignInButton extends StatelessWidget {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () async {
-        try {
-          await _googleSignIn.signIn();
-        } catch (error) {
-          print(error);
-        }
-      },
-
-      icon: ImageIcon(
-        AssetImage('/Users/kite/StudioProjects/hm_login/assets/google.png'),
-        size: 24,
-        color: Colors.yellow,
-      ),
-      style: OutlinedButton.styleFrom(backgroundColor: Colors.blueAccent),
-      label: Text('Sign in with Google',
-        style: TextStyle(
-          // fontWeight: FontWeight.bold,
-          fontSize: 15,
-          color: Colors.white,
-        ),),
-      // color:
     );
   }
 }

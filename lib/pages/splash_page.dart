@@ -1,28 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/color_constants.dart';
 
-class SplashPage extends StatelessWidget {
-  const SplashPage({super.key});
+class SplashPage extends StatefulWidget {
+  const SplashPage({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.blueAccent,
-        body : Center(
-          child : Image.asset('assets/HandongMannaLogo.png'),
-          // color: Colors.blueAccent,
-          // child : Text('Handong Manna',
-          //     style: TextStyle(
-          //       fontSize: 50.0, fontWeight:  FontWeight.bold,
-          //       fontStyle: FontStyle.italic,
-          //       fontFamily: 'Arial',
-          //       color: Colors.white,
-          //     ),
-        ),
-      ),
-    );
-    // );
-  }
+  _SplashPageState createState() => _SplashPageState();
 }
 
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 1), () {
+      checkSignedIn();
+    });
+  }
+
+  void checkSignedIn() async {
+    // Login 정보 Local에 저장되어 있는지 확인하는것.
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = localStorage.getString('token');
+    if (token != null) {
+      Navigator.pushNamed(context, '/main');
+      return;
+    }
+    Navigator.pushNamed(context, '/login');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ColorPalette.mainBlue,
+      body: Center(
+        child: Image.asset('assets/HandongMannaLogo.png'),
+      ),
+    );
+  }
+}
