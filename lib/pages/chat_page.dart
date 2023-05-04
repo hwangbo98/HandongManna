@@ -5,11 +5,17 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:handong_manna/constants/color_constants.dart';
+import 'package:handong_manna/models/message_chat.dart';
+import 'package:handong_manna/providers/chat_providers.dart';
+import 'package:handong_manna/constants/constants.dart';
+import 'package:provider/provider.dart';
+
 
 String randomString() {
   final random = Random.secure();
@@ -26,7 +32,19 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final List<types.Message> _messages = [];
-  final _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
+  final _user = const types.User(id: 'QKGhVnLjWeeZPglGcdNc');
+  // final _messagesRef = FirebaseFirestore.instance.collection('messages');
+
+  String groupChatId = "QKGhVnLjWeeZPglGcdNc-sylmC1z7m2CG33Cu2aF7";
+  int _limit = 20;
+
+  ChatProvider? chatProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,22 +126,58 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
       body: ClipRRect(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
-        child: Chat(
-          bubbleBuilder: _bubbleBuilder,
-          theme: const DefaultChatTheme(
-              inputBackgroundColor: ColorPalette.weakWhite,
-              inputTextColor: ColorPalette.strongGray,
-              sendButtonIcon: Icon(
-                Icons.send,
-                color: ColorPalette.mainBlue,
-              ),
-              backgroundColor: ColorPalette.mainWhite,
-              primaryColor: ColorPalette.mainBlue),
-          messages: _messages,
-          onSendPressed: _handleSendPressed,
-          user: _user,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(50)), // Replace 'groupChatId' with the appropriate variable
+        child: StreamBuilder<QuerySnapshot>(
+          // stream: _messagesRef.orderBy(FirestoreConstants.timestamp, descending: true).snapshots(),
+          stream: getChatStream(context, groupChatId, 50),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              ); 
+            }
+            
+            // Todo: fill _messages
+            _messages.clear();
+            _messages.addAll(
+              snapshot.data!.docs.map((doc) {
+                final message = MessageChat.fromDocument(doc);
+                return message.toChatTypeMessage(_user);
+              }).toList(),
+            );
+            
+            return Chat(
+              bubbleBuilder: _bubbleBuilder,
+              theme: const DefaultChatTheme(
+                  inputBackgroundColor: ColorPalette.weakWhite,
+                  inputTextColor: ColorPalette.strongGray,
+                  sendButtonIcon: Icon(
+                    Icons.send,
+                    color: ColorPalette.mainBlue,
+                  ),
+                  backgroundColor: ColorPalette.mainWhite,
+                  primaryColor: ColorPalette.mainBlue),
+              messages: _messages,
+              onSendPressed: _handleSendPressed,
+              user: _user,
+            );    
+          },
         ),
+        // child: Chat(
+        //   bubbleBuilder: _bubbleBuilder,
+        //   theme: const DefaultChatTheme(
+        //       inputBackgroundColor: ColorPalette.weakWhite,
+        //       inputTextColor: ColorPalette.strongGray,
+        //       sendButtonIcon: Icon(
+        //         Icons.send,
+        //         color: ColorPalette.mainBlue,
+        //       ),
+        //       backgroundColor: ColorPalette.mainWhite,
+        //       primaryColor: ColorPalette.mainBlue),
+        //   messages: _messages,
+        //   onSendPressed: _handleSendPressed,
+        //   user: _user,
+        // ),
       ),
     );
   }
@@ -153,16 +207,31 @@ class _ChatPageState extends State<ChatPage> {
         borderWidth: MediaQuery.of(context).size.width*0.02,
         radius: const Radius.circular(20.0),
       );
+  
+  Stream<QuerySnapshot> getChatStream(BuildContext context, String groupChatId, int limit) {
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    return chatProvider.getChatStream(groupChatId, limit);
+  }
 
   void _addMessage(types.Message message) {
     setState(() {
       // 여기에 StreamBuilder 사용해서 들어오는 메세지들 .insert시켜주면 됨.
-      // 추가 시키면서 서버에도 푸시를 진행해줘야함.
+
       _messages.insert(0, message);
     });
   }
 
   void _handleSendPressed(types.PartialText message) {
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    chatProvider.sendMessage(
+      message.text,
+      1,
+      groupChatId, // TODO: Replace 'groupChatId' with the appropriate variable
+      "sylmC1z7m2CG33Cu2aF7", // TODO: Replace 'this HARDCODING' with the appropriate variable
+      "QKGhVnLjWeeZPglGcdNc", 
+    );
+
+    /* TODO: Send message to backend 
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -171,5 +240,6 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _addMessage(textMessage);
-  }
+    */
+  } 
 }
