@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/color_constants.dart';
+import '../providers/auth_providers.dart';
+import 'login_page.dart';
+import 'main_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -19,14 +23,21 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void checkSignedIn() async {
-    // Login μ •λ³΄ Localμ— μ €μ¥λμ–΄ μλ”μ§€ ν™•μΈν•λ”κ²ƒ.
+    // Login ? •λ³? Local?— ????¥??–΄ ??”μ§? ?™•?Έ?•?”κ²?.
+    AuthProvider authProvider = context.read<AuthProvider>();
+    bool isLoggedIn = await authProvider.isLoggedIn();
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var token = localStorage.getString('token');
-    if (token != null) {
-      Navigator.pushNamed(context, '/main');
+    if (isLoggedIn) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
       return;
     }
-    Navigator.pushNamed(context, '/login');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   }
 
   @override

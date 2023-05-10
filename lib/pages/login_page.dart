@@ -1,10 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:handong_manna/pages/register_page.dart';
+
+import 'package:provider/provider.dart';
+
+import '../constants/app_constants.dart';
+import '../constants/color_constants.dart';
+import '../providers/auth_providers.dart';
+// import '../widgets/loading_view.dart';
+// import '../widgets/widgets.dart';
+import 'main_page.dart';
+// import 'pages.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_button/sign_button.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    switch (authProvider.status) {
+      case Status.authenticateError:
+        Fluttertoast.showToast(msg: "Sign in fail");
+        break;
+      case Status.authenticateCanceled:
+        Fluttertoast.showToast(msg: "Sign in canceled");
+        break;
+      case Status.authenticated:
+        Fluttertoast.showToast(msg: "Sign in success");
+        break;
+      default:
+        break;
+    }
     return Scaffold(
       body: ListView(
         children: [
@@ -27,11 +60,30 @@ class LoginPage extends StatelessWidget {
                   buttonType: ButtonType.google,
                   buttonSize: ButtonSize.large,
                   // small(default), medium, large
-                  onPressed: () {
-                    //여깅에서 로그인 버튼 눌렀을 때 알고리즘 진행하면 됨
-                    // 1. 파이어베이스에 올리기
-                    // 2. SharedPreference로 로그인 token 저장하기(나중에 자동로그인)
-                    Navigator.pushNamed(context, '/main');
+                  onPressed: () async {
+                    authProvider.handleSignIn().then((isSuccess) {
+                      if (isSuccess) {
+                        if(authProvider.first()){
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegistersPage(),
+                            ),
+                          );
+                        }
+                        else{
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MainPage(),
+                            ),
+                          );
+                        }
+                      }
+                    }).catchError((error, stackTrace) {
+                      Fluttertoast.showToast(msg: error.toString());
+                      authProvider.handleException();
+                    });
                   }),
               SizedBox(
                 height: 50,

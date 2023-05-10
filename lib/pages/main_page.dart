@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:handong_manna/providers/auth_providers.dart';
+import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -18,7 +20,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _counter = 0;
-
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -32,6 +33,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -49,19 +51,19 @@ class _MainPageState extends State<MainPage> {
           children: <Widget>[
             Image.asset('assets/plane.png'),
             Text(
-              '현재 접속자 수: $_counter 명',
+              'Curruent exist users: $_counter',
               style: const TextStyle(
                 fontSize: 30,
               ),
             ),
             Text(
-              '매칭된 이성 수: $_counter 명',
+              'matched : $_counter',
               style: const TextStyle(
                 fontSize: 20,
               ),
             ),
             Text(
-              '대기 중인 이성 수: $_counter 명',
+              'waiting : $_counter',
               style: const TextStyle(
                 fontSize: 20,
               ),
@@ -70,7 +72,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.pushNamed(context, '/chat');
               },
-              child: Text('Chatting Start ➜'),
+              child: Text('Chatting Start !'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.blue),
                 padding: MaterialStateProperty.all(
@@ -83,7 +85,7 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () async{authProvider.handleSignOut();},
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
