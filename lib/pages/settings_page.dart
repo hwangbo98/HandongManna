@@ -13,16 +13,15 @@ import '../constants/firestore_constants.dart';
 import '../models/user_chat.dart';
 import '../providers/setting_provider.dart';
 import '../widgets/loading_view.dart';
-import 'main_page.dart';
 
-class RegistersPage extends StatefulWidget {
-  const RegistersPage({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State createState() => RegistersPageState();
+  State createState() => SettingsPageState();
 }
 
-class RegistersPageState extends State<RegistersPage> {
+class SettingsPageState extends State<SettingsPage> {
   TextEditingController? controllerNickname;
   TextEditingController? controllerAboutMe;
   TextEditingController? controllerSchoolNum;
@@ -165,7 +164,7 @@ class RegistersPageState extends State<RegistersPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppConstants.register,
+          AppConstants.settingsTitle,
           style: TextStyle(color: ColorConstants.primaryColor),
         ),
         centerTitle: true,
@@ -297,7 +296,7 @@ class RegistersPageState extends State<RegistersPage> {
                     ),
                     Container(
                       child: Text(
-                        '?ïôÎ≤?',
+                        'ÌïôÎ≤à',
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
@@ -325,7 +324,7 @@ class RegistersPageState extends State<RegistersPage> {
                     ),
                     Container(
                       child: Text(
-                        '?†ÑÍ≥?/ÏßÅÏóÖ',
+                        'Ï†ÑÍ≥µ/ÏßÅÏóÖ',
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
@@ -358,17 +357,9 @@ class RegistersPageState extends State<RegistersPage> {
                 // Button
                 Container(
                   child: TextButton(
-                    onPressed: (){
-                      handleUpdateData();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MainPage(),
-                        ),
-                      );
-                    },
+                    onPressed: handleUpdateData,
                     child: Text(
-                      'register',
+                      'Update',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     style: ButtonStyle(
