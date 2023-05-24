@@ -10,10 +10,10 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
-import 'package:handong_manna/constants/color_constants.dart';
+import 'package:handong_manna/constants/constants.dart';
+import 'package:handong_manna/constants/kor_constants.dart';
 import 'package:handong_manna/models/message_chat.dart';
 import 'package:handong_manna/providers/chat_providers.dart';
-import 'package:handong_manna/constants/constants.dart';
 import 'package:provider/provider.dart';
 
 
@@ -21,6 +21,12 @@ String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
   return base64UrlEncode(values);
+}
+
+String randomName() {
+  final id1 = new Random().nextInt(listDongsa.length);
+  final id2 = new Random().nextInt(listMyeongsa.length);
+  return listDongsa[id1] + listMyeongsa[id2];
 }
 
 class ChatPage extends StatefulWidget {
@@ -32,12 +38,13 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final List<types.Message> _messages = [];
-  final _user = const types.User(id: 'QKGhVnLjWeeZPglGcdNc');
-  // final _messagesRef = FirebaseFirestore.instance.collection('messages');
+  final _user = const types.User(id: 'sylmC1z7m2CG33Cu2aF7');
+  int _messageCount = 0;
 
   String groupChatId = "QKGhVnLjWeeZPglGcdNc-sylmC1z7m2CG33Cu2aF7";
   int _limit = 20;
-
+  
+  String username = randomName();
   ChatProvider? chatProvider;
 
   @override
@@ -45,6 +52,16 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    chatProvider!.getMessageCount(groupChatId).then((count) {
+      setState(() {
+        _messageCount = count;
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +116,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     SizedBox(width: MediaQuery.of(context).size.width*0.02),
-                    Text("떠나간오리\nOnline")
+                    Text("$username\nOnline")
                   ],
                 ),
               ],
@@ -114,7 +131,7 @@ class _ChatPageState extends State<ChatPage> {
               padding: EdgeInsets.fromLTRB(0,0,MediaQuery.of(context).size.width*0.08,0),
               child: Row(
                 children: [
-                  Text("7"),
+                  Text("$_messageCount"), // TODO: Change to the number of existing messages
                   SizedBox(width: MediaQuery.of(context).size.width*0.02),
                   Icon(
                     Icons.chat,
@@ -136,6 +153,12 @@ class _ChatPageState extends State<ChatPage> {
                 child: CircularProgressIndicator(),
               ); 
             }
+            
+            chatProvider!.getMessageCount(groupChatId).then((count) {
+              setState(() {
+                _messageCount = count;
+              });
+            });
             
             // Todo: fill _messages
             _messages.clear();
@@ -163,21 +186,6 @@ class _ChatPageState extends State<ChatPage> {
             );    
           },
         ),
-        // child: Chat(
-        //   bubbleBuilder: _bubbleBuilder,
-        //   theme: const DefaultChatTheme(
-        //       inputBackgroundColor: ColorPalette.weakWhite,
-        //       inputTextColor: ColorPalette.strongGray,
-        //       sendButtonIcon: Icon(
-        //         Icons.send,
-        //         color: ColorPalette.mainBlue,
-        //       ),
-        //       backgroundColor: ColorPalette.mainWhite,
-        //       primaryColor: ColorPalette.mainBlue),
-        //   messages: _messages,
-        //   onSendPressed: _handleSendPressed,
-        //   user: _user,
-        // ),
       ),
     );
   }
@@ -213,14 +221,6 @@ class _ChatPageState extends State<ChatPage> {
     return chatProvider.getChatStream(groupChatId, limit);
   }
 
-  void _addMessage(types.Message message) {
-    setState(() {
-      // 여기에 StreamBuilder 사용해서 들어오는 메세지들 .insert시켜주면 됨.
-
-      _messages.insert(0, message);
-    });
-  }
-
   void _handleSendPressed(types.PartialText message) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     chatProvider.sendMessage(
@@ -231,15 +231,9 @@ class _ChatPageState extends State<ChatPage> {
       "QKGhVnLjWeeZPglGcdNc", 
     );
 
-    /* TODO: Send message to backend 
-    final textMessage = types.TextMessage(
-      author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: randomString(),
-      text: message.text,
-    );
+    chatProvider.getMessageCount(groupChatId).then((count) {
+      chatProvider.setMessageCount(groupChatId, count + 1);
+    });
 
-    _addMessage(textMessage);
-    */
-  } 
+  }
 }

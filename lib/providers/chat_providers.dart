@@ -59,7 +59,20 @@ class ChatProvider {
       );
     });
   }
-}
+
+  Future<int> getMessageCount(String groupChatId) async {
+    DocumentSnapshot docSnapshot = await firebaseFirestore.collection(FirestoreConstants.pathMessageCollection).doc(groupChatId).get();
+
+    Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+    return data['count'];
+  }
+
+  Future<void> setMessageCount(String groupChatId, int count) async {
+    await updateDataFirestore(FirestoreConstants.pathMessageCollection, groupChatId, {'count': count});
+  }
+
+
+} 
 
 class TypeMessage {
   static const text = 1;
