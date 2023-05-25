@@ -92,12 +92,12 @@ class RegistersPageState extends State<RegistersPage> {
       TaskSnapshot snapshot = await uploadTask;
       photoUrl = await snapshot.ref.getDownloadURL();
       UserChat updateInfo = UserChat(
-        id: id,
-        photoUrl: photoUrl,
-        nickname: nickname,
-        aboutMe: aboutMe,
-        schoolNum : schoolNum,
-        job : job
+          id: id,
+          photoUrl: photoUrl,
+          nickname: nickname,
+          aboutMe: aboutMe,
+          schoolNum : schoolNum,
+          job : job
       );
       settingProvider
           .updateDataFirestore(FirestoreConstants.pathUserCollection, id, updateInfo.toJson())
@@ -130,12 +130,12 @@ class RegistersPageState extends State<RegistersPage> {
       isLoading = true;
     });
     UserChat updateInfo = UserChat(
-      id: id,
-      photoUrl: photoUrl,
-      nickname: nickname,
-      aboutMe: aboutMe,
-      schoolNum : schoolNum,
-      job: job
+        id: id,
+        photoUrl: photoUrl,
+        nickname: nickname,
+        aboutMe: aboutMe,
+        schoolNum : schoolNum,
+        job: job
     );
     settingProvider
         .updateDataFirestore(FirestoreConstants.pathUserCollection, id, updateInfo.toJson())
@@ -183,53 +183,53 @@ class RegistersPageState extends State<RegistersPage> {
                     margin: EdgeInsets.all(20),
                     child: avatarImageFile == null
                         ? photoUrl.isNotEmpty
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(45),
-                                child: Image.network(
-                                  photoUrl,
-                                  fit: BoxFit.cover,
-                                  width: 90,
-                                  height: 90,
-                                  errorBuilder: (context, object, stackTrace) {
-                                    return Icon(
-                                      Icons.account_circle,
-                                      size: 90,
-                                      color: ColorConstants.greyColor,
-                                    );
-                                  },
-                                  loadingBuilder:
-                                      (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Container(
-                                      width: 90,
-                                      height: 90,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          color: ColorConstants.themeColor,
-                                          value: loadingProgress.expectedTotalBytes != null
-                                              ? loadingProgress.cumulativeBytesLoaded /
-                                                  loadingProgress.expectedTotalBytes!
-                                              : null,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              )
-                            : Icon(
-                                Icons.account_circle,
-                                size: 90,
-                                color: ColorConstants.greyColor,
-                              )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(45),
-                            child: Image.file(
-                              avatarImageFile!,
-                              width: 90,
-                              height: 90,
-                              fit: BoxFit.cover,
+                        ? ClipRRect(
+                      borderRadius: BorderRadius.circular(45),
+                      child: Image.network(
+                        photoUrl,
+                        fit: BoxFit.cover,
+                        width: 90,
+                        height: 90,
+                        errorBuilder: (context, object, stackTrace) {
+                          return Icon(
+                            Icons.account_circle,
+                            size: 90,
+                            color: ColorConstants.greyColor,
+                          );
+                        },
+                        loadingBuilder:
+                            (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            width: 90,
+                            height: 90,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: ColorConstants.themeColor,
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
                             ),
-                          ),
+                          );
+                        },
+                      ),
+                    )
+                        : Icon(
+                      Icons.account_circle,
+                      size: 90,
+                      color: ColorConstants.greyColor,
+                    )
+                        : ClipRRect(
+                      borderRadius: BorderRadius.circular(45),
+                      child: Image.file(
+                        avatarImageFile!,
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -297,7 +297,7 @@ class RegistersPageState extends State<RegistersPage> {
                     ),
                     Container(
                       child: Text(
-                        '?ïôÎ≤?',
+                        '?ÔøΩÔøΩÔøΩ?',
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,
@@ -325,7 +325,7 @@ class RegistersPageState extends State<RegistersPage> {
                     ),
                     Container(
                       child: Text(
-                        '?†ÑÍ≥?/ÏßÅÏóÖ',
+                        '?ÔøΩÔøΩÔøΩ?/ÏßÅÏóÖ',
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold,

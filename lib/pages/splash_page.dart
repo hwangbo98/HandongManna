@@ -23,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void checkSignedIn() async {
-    // Login ? •ë³? Local?— ????¥?˜?–´ ?ˆ?Š”ì§? ?™•?¸?•˜?Š”ê²?.
+    // Login ?ï¿½ï¿½ï¿½? Local?ï¿½ï¿½ ????ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ï¿½? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½?.
     AuthProvider authProvider = context.read<AuthProvider>();
     bool isLoggedIn = await authProvider.isLoggedIn();
     SharedPreferences localStorage = await SharedPreferences.getInstance();
