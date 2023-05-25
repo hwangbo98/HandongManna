@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +36,92 @@ class AuthProvider extends ChangeNotifier {
     required this.firebaseFirestore,
   });
 
-  
+//   Future<void> performMatching() async {
+//     final sfDocRef = FirebaseFirestore.instance.collection('waiting_list');
+//     FirebaseFirestore.instance.runTransaction((transaction) async {
+//     QuerySnapshot querySnapshot = await sfDocRef.get();
+//     // final snapshot = await transaction.get(sfDocRef as DocumentReference<Object?>);
+//     if (querySnapshot.size >= 2) {
+//     List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
+
+//     // 랜덤으로 2명의 사용자 선택
+//     List<int> indices = List.generate(queueDocs.length, (index) => index);
+//     indices.shuffle();
+//     List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 2);
+
+
+//   // final newPopulation = snapshot.get("population") + 1;
+//   transaction.update(sfDocRef as DocumentReference<Object?>, {"population": newPopulation});
+// }).then(
+//   (value) => print("DocumentSnapshot successfully updated!"),
+//   onError: (e) => print("Error updating document $e"),
+// );
+//   // Firestore 대기열 컬렉션 참조
+//   CollectionReference queueRef = FirebaseFirestore.instance.collection('waiting_list');
+
+//   // 대기열 조회
+//   QuerySnapshot querySnapshot = await queueRef.get();
+
+//   // 대기열에 2명 이상의 사용자가 있는 경우 매칭 수행
+//   if (querySnapshot.size >= 2) {
+//     List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
+
+//     // 랜덤으로 2명의 사용자 선택
+//     List<int> indices = List.generate(queueDocs.length, (index) => index);
+//     indices.shuffle();
+//     List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 2);
+
+//     // 매칭된 사용자들의 문서 업데이트
+//     WriteBatch batch = FirebaseFirestore.instance.batch();
+//     for (QueryDocumentSnapshot userDoc in matchedUsers) {
+//       DocumentReference userRef = userDoc.reference;
+
+//       // 매칭 정보 업데이트
+//       batch.update(userRef, {
+//         'matched': true,
+//         // 매칭된 상대방 사용자의 식별자 등 다른 필드 업데이트
+//       });
+//     }
+
+//     // 매칭된 사용자들을 대기열에서 삭제
+//     for (QueryDocumentSnapshot userDoc in matchedUsers) {
+//       batch.delete(userDoc.reference);
+//     }
+
+//     // 배치 업데이트 실행
+//     await batch.commit();
+//   }
+// }
+
 
   String? getUserFirebaseId() {
     return prefs.getString(FirestoreConstants.id);
+  }
+
+  Stream<int> matchingState() {
+    String? userId = getUserFirebaseId();
+    StreamController<int> controller = StreamController<int>();
+
+    if (userId != null) {
+      firebaseFirestore
+          .collection(FirestoreConstants.pathUserCollection)
+          .doc(userId)
+          .snapshots()
+          .listen((DocumentSnapshot userSnapshot) {
+        int isMatching = userSnapshot.get(FirestoreConstants.ismatching);
+        controller.add(isMatching);
+      });
+    }
+    return controller.stream;
+  }
+
+  Future<void> matchStart() async{
+      firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(getUserFirebaseId()).update({
+            FirestoreConstants.ismatching: 1,
+      });
+      firebaseFirestore.collection("waiting_list").doc(getUserFirebaseId()).set({
+            "sex": 1,
+      });
   }
 
   Future<bool> isLoggedIn() async {
@@ -95,6 +179,11 @@ class AuthProvider extends ChangeNotifier {
           await prefs.setString(FirestoreConstants.aboutMe, userChat.aboutMe);
         }
         _status = Status.authenticated;
+        firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(firebaseUser.uid).update({
+            FirestoreConstants.isLogin: true,
+            FirestoreConstants.ismatching: 0,
+            
+        });
         notifyListeners();
         return true;
       } else {
@@ -120,6 +209,13 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> handleSignOut() async {
     _status = Status.uninitialized;
+    String? userId = getUserFirebaseId();
+    if (userId != null) {
+      await firebaseFirestore
+          .collection(FirestoreConstants.pathUserCollection)
+          .doc(userId)
+          .update({FirestoreConstants.isLogin: false});
+    }
     await firebaseAuth.signOut();
     await googleSignIn.disconnect();
     await googleSignIn.signOut();

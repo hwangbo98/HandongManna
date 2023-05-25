@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:handong_manna/providers/auth_providers.dart';
 import 'package:provider/provider.dart';
 
+import 'login_page.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -43,7 +45,20 @@ class _MainPageState extends State<MainPage> {
             onPressed: () {
               Navigator.pushNamed(context, '/edit_profile');
             },
-          )
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () {
+                // 로그아웃 버튼이 클릭되었을 때 로그아웃 처리
+                authProvider.handleSignOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+            ),
+          ],
       ),
       body: Center(
         child: Column(
@@ -68,19 +83,50 @@ class _MainPageState extends State<MainPage> {
                 fontSize: 20,
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/chat');
-              },
-              child: Text('Chatting Start !'),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
-                padding: MaterialStateProperty.all(
-                  EdgeInsets.all(10.0),
-                ),
-                overlayColor: MaterialStateProperty.all(Colors.black),
-              ),
-            ),
+            StreamBuilder(
+              stream: authProvider.matchingState(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                else{
+                  if (snapshot.data == 1) {
+                    return CircularProgressIndicator();
+                  }
+                  else if(snapshot.data == 0){
+                    return ElevatedButton(
+                      onPressed: () {
+                        authProvider.matchStart();
+                      },
+                      child: Text('Chatting Start !'),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.blue),
+                        padding: MaterialStateProperty.all(
+                          EdgeInsets.all(10.0),
+                        ),
+                        overlayColor: MaterialStateProperty.all(Colors.black),
+                      ),
+                    );
+                  }
+                  else{
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushNamed(context, '/chat');});
+                    return ElevatedButton(
+                      child: Text('Chatting matched!'),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.blue),
+                        padding: MaterialStateProperty.all(
+                          EdgeInsets.all(10.0),
+                        ),
+                        overlayColor: MaterialStateProperty.all(Colors.black),
+                      ), onPressed: () {  },
+                    );
+                    
+                  }
+                }
+              }) 
           ],
         ),
       ),

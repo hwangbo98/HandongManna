@@ -14,4 +14,6 @@ class FirestoreConstants {
   static const schoolNum = "schoolNum";
   static const rc = "rc";
   static const job = "job";
+  static const isLogin = "isLogin";
+  static const ismatching = "ismatching";
 }
