@@ -92,10 +92,11 @@ class MyApp extends StatelessWidget {
 
             case '/chat':
               return MaterialPageRoute(builder: (context)=>ChatPage());
-
-            case '/chat_profile':
-              return MaterialPageRoute(builder: (context)=>ChatProfilePage());
           }
+        },
+        routes: {
+          // For Passing arguments
+          '/chat_profile': (BuildContext context) => ChatProfilePage()
         },
       ),
     );

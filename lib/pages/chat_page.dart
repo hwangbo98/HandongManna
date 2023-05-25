@@ -13,9 +13,10 @@ import 'package:bubble/bubble.dart';
 import 'package:handong_manna/constants/constants.dart';
 import 'package:handong_manna/constants/kor_constants.dart';
 import 'package:handong_manna/models/message_chat.dart';
+import 'package:handong_manna/models/models.dart';
+import 'package:handong_manna/pages/chat_profile_page.dart';
 import 'package:handong_manna/providers/chat_providers.dart';
 import 'package:provider/provider.dart';
-
 
 String randomString() {
   final random = Random.secure();
@@ -43,7 +44,7 @@ class _ChatPageState extends State<ChatPage> {
 
   String groupChatId = "QKGhVnLjWeeZPglGcdNc-sylmC1z7m2CG33Cu2aF7";
   int _limit = 20;
-  
+
   String username = randomName();
   ChatProvider? chatProvider;
 
@@ -52,6 +53,7 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -61,7 +63,6 @@ class _ChatPageState extends State<ChatPage> {
       });
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -90,32 +91,64 @@ class _ChatPageState extends State<ChatPage> {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: (){
-                        Navigator.pushNamed(context, '/chat_profile');
+                      onTap: () {
+                        if(_messageCount > 200){
+                          Navigator.pushNamed(context, '/chat_profile',
+                              arguments: ChatProfilePageArguments(
+                                  isNameOpen: true,
+                                  isIntroduceOpen: true,
+                                  isProfileOpen: true,
+                                  isOccupationOpen: true));
+                        }else if(_messageCount > 150){
+                          Navigator.pushNamed(context, '/chat_profile',
+                              arguments: ChatProfilePageArguments(
+                                  isNameOpen: true,
+                                  isIntroduceOpen: true,
+                                  isProfileOpen: false,
+                                  isOccupationOpen: true));
+                        }else if(_messageCount > 100){
+                          Navigator.pushNamed(context, '/chat_profile',
+                              arguments: ChatProfilePageArguments(
+                                  isNameOpen: false,
+                                  isIntroduceOpen: true,
+                                  isProfileOpen: false,
+                                  isOccupationOpen: true));
+                        }else if(_messageCount > 50){
+                          Navigator.pushNamed(context, '/chat_profile',
+                              arguments: ChatProfilePageArguments(
+                                  isNameOpen: false,
+                                  isIntroduceOpen: true,
+                                  isProfileOpen: false,
+                                  isOccupationOpen: false));
+                        }else{
+                          Navigator.pushNamed(context, '/chat_profile',
+                              arguments: ChatProfilePageArguments(
+                                  isNameOpen: false,
+                                  isIntroduceOpen: false,
+                                  isProfileOpen: false,
+                                  isOccupationOpen: false));
+                        }
                       },
                       child: CircleAvatar(
-                          radius: MediaQuery.of(context).size.width*0.06,
+                          radius: MediaQuery.of(context).size.width * 0.06,
                           //TODOLIST: load image from Database
                           backgroundImage: null,
-                          child: Stack(
-                              children: [
-                                Align(
-                                    alignment: Alignment.bottomRight,
+                          child: Stack(children: [
+                            Align(
+                                alignment: Alignment.bottomRight,
+                                child: CircleAvatar(
+                                    radius: MediaQuery.of(context).size.width *
+                                        0.025,
+                                    backgroundColor: Colors.white,
+                                    //TODOLIST: online -> green offline -> green
                                     child: CircleAvatar(
-                                        radius: MediaQuery.of(context).size.width*0.025,
-                                        backgroundColor: Colors.white,
-                                        //TODOLIST: online -> green offline -> green
-                                        child: CircleAvatar(
-                                            radius: MediaQuery.of(context).size.width*0.020,
-                                            backgroundColor: Colors.green
-                                        )
-                                    )
-                                )
-                              ]
-                          )
-                      ),
+                                        radius:
+                                            MediaQuery.of(context).size.width *
+                                                0.020,
+                                        backgroundColor: Colors.green)))
+                          ])),
                     ),
-                    SizedBox(width: MediaQuery.of(context).size.width*0.02),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                     Text("$username\nOnline")
                   ],
                 ),
@@ -128,22 +161,24 @@ class _ChatPageState extends State<ChatPage> {
         ),
         actions: [
           Padding(
-              padding: EdgeInsets.fromLTRB(0,0,MediaQuery.of(context).size.width*0.08,0),
+              padding: EdgeInsets.fromLTRB(
+                  0, 0, MediaQuery.of(context).size.width * 0.08, 0),
               child: Row(
                 children: [
-                  Text("$_messageCount"), // TODO: Change to the number of existing messages
-                  SizedBox(width: MediaQuery.of(context).size.width*0.02),
+                  Text("$_messageCount"),
+                  // TODO: Change to the number of existing messages
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.02),
                   Icon(
                     Icons.chat,
                     color: ColorPalette.mainWhite,
                   ),
                 ],
-              )
-          ),
+              )),
         ],
       ),
       body: ClipRRect(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(50)), // Replace 'groupChatId' with the appropriate variable
+        borderRadius: BorderRadius.vertical(top: Radius.circular(50)),
+        // Replace 'groupChatId' with the appropriate variable
         child: StreamBuilder<QuerySnapshot>(
           // stream: _messagesRef.orderBy(FirestoreConstants.timestamp, descending: true).snapshots(),
           stream: getChatStream(context, groupChatId, 50),
@@ -151,15 +186,15 @@ class _ChatPageState extends State<ChatPage> {
             if (!snapshot.hasData) {
               return const Center(
                 child: CircularProgressIndicator(),
-              ); 
+              );
             }
-            
+
             chatProvider!.getMessageCount(groupChatId).then((count) {
               setState(() {
                 _messageCount = count;
               });
             });
-            
+
             // Todo: fill _messages
             _messages.clear();
             _messages.addAll(
@@ -168,7 +203,7 @@ class _ChatPageState extends State<ChatPage> {
                 return message.toChatTypeMessage(_user);
               }).toList(),
             );
-            
+
             return Chat(
               bubbleBuilder: _bubbleBuilder,
               theme: const DefaultChatTheme(
@@ -183,7 +218,7 @@ class _ChatPageState extends State<ChatPage> {
               messages: _messages,
               onSendPressed: _handleSendPressed,
               user: _user,
-            );    
+            );
           },
         ),
       ),
@@ -191,15 +226,15 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _bubbleBuilder(
-      Widget child, {
-        required message,
-        required nextMessageInGroup,
-      }) =>
+    Widget child, {
+    required message,
+    required nextMessageInGroup,
+  }) =>
       Bubble(
         child: child,
         padding: const BubbleEdges.fromLTRB(2, 0, 2, 0),
         color: _user.id != message.author.id ||
-            message.type == types.MessageType.image
+                message.type == types.MessageType.image
             ? ColorPalette.weakWhite
             : ColorPalette.mainBlue,
         margin: nextMessageInGroup
@@ -210,13 +245,14 @@ class _ChatPageState extends State<ChatPage> {
         nip: nextMessageInGroup
             ? BubbleNip.no
             : _user.id != message.author.id
-            ? BubbleNip.leftBottom
-            : BubbleNip.rightBottom,
-        borderWidth: MediaQuery.of(context).size.width*0.02,
+                ? BubbleNip.leftBottom
+                : BubbleNip.rightBottom,
+        borderWidth: MediaQuery.of(context).size.width * 0.02,
         radius: const Radius.circular(20.0),
       );
-  
-  Stream<QuerySnapshot> getChatStream(BuildContext context, String groupChatId, int limit) {
+
+  Stream<QuerySnapshot> getChatStream(
+      BuildContext context, String groupChatId, int limit) {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     return chatProvider.getChatStream(groupChatId, limit);
   }
@@ -227,13 +263,13 @@ class _ChatPageState extends State<ChatPage> {
       message.text,
       1,
       groupChatId, // TODO: Replace 'groupChatId' with the appropriate variable
-      "sylmC1z7m2CG33Cu2aF7", // TODO: Replace 'this HARDCODING' with the appropriate variable
-      "QKGhVnLjWeeZPglGcdNc", 
+      "sylmC1z7m2CG33Cu2aF7",
+      // TODO: Replace 'this HARDCODING' with the appropriate variable
+      "QKGhVnLjWeeZPglGcdNc",
     );
 
     chatProvider.getMessageCount(groupChatId).then((count) {
       chatProvider.setMessageCount(groupChatId, count + 1);
     });
-
   }
 }
