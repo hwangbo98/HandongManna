@@ -61,11 +61,21 @@ class ChatProvider {
   }
 
   Future<int> getMessageCount(String groupChatId) async {
-    DocumentSnapshot docSnapshot = await firebaseFirestore.collection(FirestoreConstants.pathMessageCollection).doc(groupChatId).get();
+
+    if (groupChatId.isEmpty) {
+      throw ArgumentError('groupChatId cannot be empty');
+    }
+    DocumentReference docRef = firebaseFirestore.collection(FirestoreConstants.pathMessageCollection).doc(groupChatId);
+    DocumentSnapshot docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      await docRef.set({'count': 0});
+      return 0;
+    }
 
     Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
-    return data['count'];
-  }
+      return data['count'];
+    }
 
   Future<void> setMessageCount(String groupChatId, int count) async {
     await updateDataFirestore(FirestoreConstants.pathMessageCollection, groupChatId, {'count': count});

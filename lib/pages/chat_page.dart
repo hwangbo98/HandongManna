@@ -1,3 +1,4 @@
+
 /*
 * Chatting Page
 * Front_Owner: KimYounghun
@@ -13,8 +14,9 @@ import 'package:bubble/bubble.dart';
 import 'package:handong_manna/constants/constants.dart';
 import 'package:handong_manna/models/models.dart';
 import 'package:handong_manna/pages/chat_profile_page.dart';
-import 'package:handong_manna/providers/chat_providers.dart';
+import 'package:handong_manna/providers/providers.dart';
 import 'package:provider/provider.dart';
+
 
 String randomString() {
   final random = Random.secure();
@@ -23,8 +25,8 @@ String randomString() {
 }
 
 String randomName() {
-  final id1 = new Random().nextInt(listDongsa.length);
-  final id2 = new Random().nextInt(listMyeongsa.length);
+  final id1 = Random().nextInt(listDongsa.length);
+  final id2 = Random().nextInt(listMyeongsa.length);
   return listDongsa[id1] + listMyeongsa[id2];
 }
 
@@ -37,11 +39,11 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final List<types.Message> _messages = [];
-  final _user = const types.User(id: 'sylmC1z7m2CG33Cu2aF7');
+  types.User _user = const types.User(id: "");
   int _messageCount = 0;
 
-  String groupChatId = "QKGhVnLjWeeZPglGcdNc-sylmC1z7m2CG33Cu2aF7";
-  int _limit = 20;
+  String groupChatId = "";
+  final int _limit = 20;
 
   String username = randomName();
   ChatProvider? chatProvider;
@@ -50,16 +52,40 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    WidgetsBinding.instance?.addPostFrameCallback((_) async { 
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      var userId = authProvider.getUserFirebaseId();
+      if (userId != null) {
+        _user = types.User(id: userId);
+        await setGroupChatId(userId);
+      }
+    });
+  }
+
+  Future<void> setGroupChatId(String userId) async {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+    String opponentId = userDoc.get('chattingWith');
+    setState(() {
+      groupChatId = "";
+      groupChatId += userId.compareTo(opponentId) < 0
+          ? "$userId-$opponentId"
+          : "$opponentId-$userId";
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    chatProvider!.getMessageCount(groupChatId).then((count) {
-      setState(() {
-        _messageCount = count;
+    if (groupChatId != "") {
+      chatProvider!.getMessageCount(groupChatId).then((count) {
+        setState(() {
+          _messageCount = count;
+        });
       });
-    });
+    }
   }
 
   @override
@@ -166,7 +192,7 @@ class _ChatPageState extends State<ChatPage> {
                   Text("$_messageCount"),
                   // TODO: Change to the number of existing messages
                   SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                  Icon(
+                  const Icon(
                     Icons.chat,
                     color: ColorPalette.mainWhite,
                   ),
@@ -179,19 +205,21 @@ class _ChatPageState extends State<ChatPage> {
         // Replace 'groupChatId' with the appropriate variable
         child: StreamBuilder<QuerySnapshot>(
           // stream: _messagesRef.orderBy(FirestoreConstants.timestamp, descending: true).snapshots(),
-          stream: getChatStream(context, groupChatId, 50),
+          stream: getChatStream(context, groupChatId, _limit),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-
-            chatProvider!.getMessageCount(groupChatId).then((count) {
-              setState(() {
-                _messageCount = count;
+            
+            if (groupChatId != "") {
+              chatProvider!.getMessageCount(groupChatId).then((count) {
+                setState(() {
+                  _messageCount = count;
+                });
               });
-            });
+            }
 
             // Todo: fill _messages
             _messages.clear();
@@ -202,9 +230,10 @@ class _ChatPageState extends State<ChatPage> {
               }).toList(),
             );
 
-            return Chat(
-              bubbleBuilder: _bubbleBuilder,
-              theme: const DefaultChatTheme(
+            if (_user.id != "") {
+              return Chat(
+                bubbleBuilder: _bubbleBuilder,
+                theme: const DefaultChatTheme(
                   inputBackgroundColor: ColorPalette.weakWhite,
                   inputTextColor: ColorPalette.strongGray,
                   sendButtonIcon: Icon(
@@ -213,10 +242,18 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   backgroundColor: ColorPalette.mainWhite,
                   primaryColor: ColorPalette.mainBlue),
-              messages: _messages,
-              onSendPressed: _handleSendPressed,
-              user: _user,
-            );
+                messages: _messages,
+                onSendPressed: _handleSendPressed,
+                user: _user!,
+              );
+            } else {
+              // return some kind of error widget
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: ColorPalette.mainWhite,
+                )
+              );
+            }
           },
         ),
       ),
@@ -229,7 +266,6 @@ class _ChatPageState extends State<ChatPage> {
     required nextMessageInGroup,
   }) =>
       Bubble(
-        child: child,
         padding: const BubbleEdges.fromLTRB(2, 0, 2, 0),
         color: _user.id != message.author.id ||
                 message.type == types.MessageType.image
@@ -247,10 +283,15 @@ class _ChatPageState extends State<ChatPage> {
                 : BubbleNip.rightBottom,
         borderWidth: MediaQuery.of(context).size.width * 0.02,
         radius: const Radius.circular(20.0),
+        child: child,
       );
 
   Stream<QuerySnapshot> getChatStream(
       BuildContext context, String groupChatId, int limit) {
+    if (groupChatId.isEmpty) {
+      return Stream<QuerySnapshot>.empty();
+    }
+
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     return chatProvider.getChatStream(groupChatId, limit);
   }
@@ -260,14 +301,14 @@ class _ChatPageState extends State<ChatPage> {
     chatProvider.sendMessage(
       message.text,
       1,
-      groupChatId, // TODO: Replace 'groupChatId' with the appropriate variable
-      "sylmC1z7m2CG33Cu2aF7",
-      // TODO: Replace 'this HARDCODING' with the appropriate variable
-      "QKGhVnLjWeeZPglGcdNc",
+      groupChatId, 
+      _user.id,
+      groupChatId.replaceAll(_user.id, "").replaceAll("-", ""),
     );
-
-    chatProvider.getMessageCount(groupChatId).then((count) {
-      chatProvider.setMessageCount(groupChatId, count + 1);
-    });
+    if (groupChatId != "") {
+      chatProvider.getMessageCount(groupChatId).then((count) {
+        chatProvider.setMessageCount(groupChatId, count + 1);
+      });
+    }
   }
 }
