@@ -4,14 +4,10 @@ import 'package:handong_manna/pages/register_page.dart';
 
 import 'package:provider/provider.dart';
 
-import '../constants/app_constants.dart';
-import '../constants/color_constants.dart';
+import 'package:handong_manna/providers/providers.dart';
 import '../providers/auth_providers.dart';
-// import '../widgets/loading_view.dart';
-// import '../widgets/widgets.dart';
+
 import 'main_page.dart';
-// import 'pages.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_button/sign_button.dart';
 
 class LoginPage extends StatefulWidget {

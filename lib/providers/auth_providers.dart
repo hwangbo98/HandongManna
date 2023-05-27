@@ -4,10 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:handong_manna/constants/constants.dart';
+import 'package:handong_manna/models/user_chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constants/firestore_constants.dart';
-import '../models/user_chat.dart';
 
 enum Status {
   uninitialized,
@@ -44,7 +44,7 @@ class AuthProvider extends ChangeNotifier {
 //     if (querySnapshot.size >= 2) {
 //     List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
 
-//     // ·£´ýÀ¸·Î 2¸íÀÇ »ç¿ëÀÚ ¼±ÅÃ
+//     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 //     List<int> indices = List.generate(queueDocs.length, (index) => index);
 //     indices.shuffle();
 //     List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 2);
@@ -56,39 +56,39 @@ class AuthProvider extends ChangeNotifier {
 //   (value) => print("DocumentSnapshot successfully updated!"),
 //   onError: (e) => print("Error updating document $e"),
 // );
-//   // Firestore ´ë±â¿­ ÄÃ·º¼Ç ÂüÁ¶
+//   // Firestore ï¿½ï¿½â¿­ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 //   CollectionReference queueRef = FirebaseFirestore.instance.collection('waiting_list');
 
-//   // ´ë±â¿­ Á¶È¸
+//   // ï¿½ï¿½â¿­ ï¿½ï¿½È¸
 //   QuerySnapshot querySnapshot = await queueRef.get();
 
-//   // ´ë±â¿­¿¡ 2¸í ÀÌ»óÀÇ »ç¿ëÀÚ°¡ ÀÖ´Â °æ¿ì ¸ÅÄª ¼öÇà
+//   // ï¿½ï¿½â¿­ï¿½ï¿½ 2ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Äª ï¿½ï¿½ï¿½ï¿½
 //   if (querySnapshot.size >= 2) {
 //     List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
 
-//     // ·£´ýÀ¸·Î 2¸íÀÇ »ç¿ëÀÚ ¼±ÅÃ
+//     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 //     List<int> indices = List.generate(queueDocs.length, (index) => index);
 //     indices.shuffle();
 //     List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 2);
 
-//     // ¸ÅÄªµÈ »ç¿ëÀÚµéÀÇ ¹®¼­ ¾÷µ¥ÀÌÆ®
+//     // ï¿½ï¿½Äªï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 //     WriteBatch batch = FirebaseFirestore.instance.batch();
 //     for (QueryDocumentSnapshot userDoc in matchedUsers) {
 //       DocumentReference userRef = userDoc.reference;
 
-//       // ¸ÅÄª Á¤º¸ ¾÷µ¥ÀÌÆ®
+//       // ï¿½ï¿½Äª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 //       batch.update(userRef, {
 //         'matched': true,
-//         // ¸ÅÄªµÈ »ó´ë¹æ »ç¿ëÀÚÀÇ ½Äº°ÀÚ µî ´Ù¸¥ ÇÊµå ¾÷µ¥ÀÌÆ®
+//         // ï¿½ï¿½Äªï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Äºï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½Êµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 //       });
 //     }
 
-//     // ¸ÅÄªµÈ »ç¿ëÀÚµéÀ» ´ë±â¿­¿¡¼­ »èÁ¦
+//     // ï¿½ï¿½Äªï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ ï¿½ï¿½â¿­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 //     for (QueryDocumentSnapshot userDoc in matchedUsers) {
 //       batch.delete(userDoc.reference);
 //     }
 
-//     // ¹èÄ¡ ¾÷µ¥ÀÌÆ® ½ÇÇà
+//     // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 //     await batch.commit();
 //   }
 // }

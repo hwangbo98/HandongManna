@@ -11,8 +11,6 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble/bubble.dart';
 import 'package:handong_manna/constants/constants.dart';
-import 'package:handong_manna/constants/kor_constants.dart';
-import 'package:handong_manna/models/message_chat.dart';
 import 'package:handong_manna/models/models.dart';
 import 'package:handong_manna/pages/chat_profile_page.dart';
 import 'package:handong_manna/providers/chat_providers.dart';

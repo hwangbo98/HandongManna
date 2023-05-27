@@ -5,11 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:handong_manna/constants/app_constants.dart';
-import 'package:handong_manna/constants/color_constants.dart';
-import 'package:handong_manna/models/models.dart';
-import 'package:handong_manna/providers/chat_providers.dart';
-import 'package:provider/provider.dart';
+import 'package:handong_manna/constants/constants.dart';
 
 class ChatProfilePageArguments{
   ChatProfilePageArguments({required this.isNameOpen, required this.isOccupationOpen, required this.isIntroduceOpen, required this.isProfileOpen});

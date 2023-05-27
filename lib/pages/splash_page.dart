@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants/color_constants.dart';
-import '../providers/auth_providers.dart';
+import 'package:handong_manna/constants/constants.dart';
+import 'package:handong_manna/providers/providers.dart';
 import 'login_page.dart';
 import 'main_page.dart';
 

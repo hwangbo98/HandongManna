@@ -7,12 +7,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/app_constants.dart';
-import '../constants/color_constants.dart';
-import '../constants/firestore_constants.dart';
-import '../models/user_chat.dart';
-import '../providers/setting_provider.dart';
-import '../widgets/loading_view.dart';
+import 'package:handong_manna/constants/constants.dart';
+import 'package:handong_manna/models/models.dart';
+import 'package:handong_manna/providers/providers.dart';
+import 'package:handong_manna/widgets/loading_view.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

@@ -10,17 +10,14 @@ import 'package:handong_manna/pages/register_page.dart';
 import 'package:handong_manna/pages/settings_page.dart';
 import 'package:handong_manna/pages/splash_page.dart';
 
-import 'package:handong_manna/providers/chat_providers.dart';
-import 'package:handong_manna/providers/setting_provider.dart';
+import 'package:handong_manna/providers/providers.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
 
-import 'providers/auth_providers.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure that the binding is initialized

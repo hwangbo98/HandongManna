@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () {
-                // ·Î±×¾Æ¿ô ¹öÆ°ÀÌ Å¬¸¯µÇ¾úÀ» ¶§ ·Î±×¾Æ¿ô Ã³¸®
+                // ï¿½Î±×¾Æ¿ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Î±×¾Æ¿ï¿½ Ã³ï¿½ï¿½
                 authProvider.handleSignOut();
                 Navigator.pushReplacement(
                   context,
