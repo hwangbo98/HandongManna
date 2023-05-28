@@ -55,12 +55,13 @@ class AuthProvider extends ChangeNotifier {
     final sfDocRef = FirebaseFirestore.instance.collection('waiting_list');
     FirebaseFirestore.instance.runTransaction((transaction) async {
       // String matchedWith = userSnapshot.get('chattingWith');
-      if (userSnapshot.get('chattingWith') != null) {
+      if (!(userSnapshot.get('chattingWith').isEmpty)) {
         return;
       }
       QuerySnapshot querySnapshot = await sfDocRef.get();
       querySnapshot.docs.removeWhere((doc) => doc.id == currentUserID);
       if (querySnapshot.size >= 1) {
+        
         List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
 
         List<int> indices = List.generate(queueDocs.length, (index) => index);
