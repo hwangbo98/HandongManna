@@ -50,7 +50,6 @@ class _MainPageState extends State<MainPage> {
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () {
-                // �α׾ƿ� ��ư�� Ŭ���Ǿ��� �� �α׾ƿ� ó��
                 authProvider.handleSignOut();
                 Navigator.pushReplacement(
                   context,
@@ -96,7 +95,7 @@ class _MainPageState extends State<MainPage> {
                   else if(snapshot.data == 0){
                     return ElevatedButton(
                       onPressed: () {
-                        authProvider.matchStart();
+                        authProvider.performMatching();
                       },
                       child: Text('Chatting Start !'),
                       style: ButtonStyle(
