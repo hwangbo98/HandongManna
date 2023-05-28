@@ -36,62 +36,65 @@ class AuthProvider extends ChangeNotifier {
     required this.firebaseFirestore,
   });
 
-//   Future<void> performMatching() async {
-//     final sfDocRef = FirebaseFirestore.instance.collection('waiting_list');
-//     FirebaseFirestore.instance.runTransaction((transaction) async {
-//     QuerySnapshot querySnapshot = await sfDocRef.get();
-//     // final snapshot = await transaction.get(sfDocRef as DocumentReference<Object?>);
-//     if (querySnapshot.size >= 2) {
-//     List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
+  Future<void> performMatching() async {
+    String? currentUserID = getUserFirebaseId();
 
-//     // �������� 2���� ����� ����
-//     List<int> indices = List.generate(queueDocs.length, (index) => index);
-//     indices.shuffle();
-//     List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 2);
+    DocumentSnapshot userSnapshot = await firebaseFirestore
+      .collection(FirestoreConstants.pathUserCollection)
+      .doc(currentUserID)
+      .get();
 
 
-//   // final newPopulation = snapshot.get("population") + 1;
-//   transaction.update(sfDocRef as DocumentReference<Object?>, {"population": newPopulation});
-// }).then(
-//   (value) => print("DocumentSnapshot successfully updated!"),
-//   onError: (e) => print("Error updating document $e"),
-// );
-//   // Firestore ��⿭ �÷��� ����
-//   CollectionReference queueRef = FirebaseFirestore.instance.collection('waiting_list');
+    firebaseFirestore.collection("waiting_list").doc(currentUserID).set({
+          "sex": 1,
+    });
+    firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(currentUserID).update({
+          FirestoreConstants.ismatching: 1,
+    });
 
-//   // ��⿭ ��ȸ
-//   QuerySnapshot querySnapshot = await queueRef.get();
+    final sfDocRef = FirebaseFirestore.instance.collection('waiting_list');
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      // String matchedWith = userSnapshot.get('chattingWith');
+      if (userSnapshot.get('chattingWith') != null) {
+        return;
+      }
+      QuerySnapshot querySnapshot = await sfDocRef.get();
+      querySnapshot.docs.removeWhere((doc) => doc.id == currentUserID);
+      if (querySnapshot.size >= 1) {
+        List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
 
-//   // ��⿭�� 2�� �̻��� ����ڰ� �ִ� ��� ��Ī ����
-//   if (querySnapshot.size >= 2) {
-//     List<QueryDocumentSnapshot> queueDocs = querySnapshot.docs;
+        List<int> indices = List.generate(queueDocs.length, (index) => index);
+        indices.shuffle();
+        List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 1);
+        String id="";
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+        for (QueryDocumentSnapshot userDoc in matchedUsers) {
+          id = userDoc.id;
+          batch.update(
+            firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(userDoc.id),
+            {
+              "chattingWith": currentUserID,
+              FirestoreConstants.ismatching: 2,
+            },
+          );
+        }
+        batch.update(
+          firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(currentUserID),
+          {
+            "chattingWith": id,
+            FirestoreConstants.ismatching: 2,
+          },
+        );
 
-//     // �������� 2���� ����� ����
-//     List<int> indices = List.generate(queueDocs.length, (index) => index);
-//     indices.shuffle();
-//     List<QueryDocumentSnapshot> matchedUsers = queueDocs.sublist(0, 2);
+        for (QueryDocumentSnapshot userDoc in matchedUsers) {
+          batch.delete(userDoc.reference);
+        }
+        batch.delete(firebaseFirestore.collection("waiting_list").doc(currentUserID));
 
-//     // ��Ī�� ����ڵ��� ���� ������Ʈ
-//     WriteBatch batch = FirebaseFirestore.instance.batch();
-//     for (QueryDocumentSnapshot userDoc in matchedUsers) {
-//       DocumentReference userRef = userDoc.reference;
-
-//       // ��Ī ���� ������Ʈ
-//       batch.update(userRef, {
-//         'matched': true,
-//         // ��Ī�� ���� ������� �ĺ��� �� �ٸ� �ʵ� ������Ʈ
-//       });
-//     }
-
-//     // ��Ī�� ����ڵ��� ��⿭���� ����
-//     for (QueryDocumentSnapshot userDoc in matchedUsers) {
-//       batch.delete(userDoc.reference);
-//     }
-
-//     // ��ġ ������Ʈ ����
-//     await batch.commit();
-//   }
-// }
+        await batch.commit();
+      }
+    });
+  }
 
 
   String? getUserFirebaseId() {
