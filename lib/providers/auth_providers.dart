@@ -46,13 +46,14 @@ class AuthProvider extends ChangeNotifier {
 
 
     firebaseFirestore.collection("waiting_list").doc(currentUserID).set({
+          "id" : currentUserID,
           "sex": 1,
     });
     firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(currentUserID).update({
           FirestoreConstants.ismatching: 1,
     });
 
-    final sfDocRef = FirebaseFirestore.instance.collection('waiting_list');
+    final sfDocRef = FirebaseFirestore.instance.collection('waiting_list').where("id", isNotEqualTo: currentUserID);
     FirebaseFirestore.instance.runTransaction((transaction) async {
       // String matchedWith = userSnapshot.get('chattingWith');
       if (!(userSnapshot.get('chattingWith').isEmpty)) {
