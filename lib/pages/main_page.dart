@@ -39,7 +39,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text("HanndongManna"),
+          title: Text("Handong Manna"),
           leading: IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
@@ -64,23 +64,20 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset('assets/plane.png'),
-            Text(
-              'Curruent exist users: $_counter',
-              style: const TextStyle(
-                fontSize: 30,
-              ),
-            ),
-            Text(
-              'matched : $_counter',
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 20.0),
+              child: Text(
+              'Corinthians 13:13',
               style: const TextStyle(
                 fontSize: 20,
               ),
-            ),
+              )),
             Text(
-              'waiting : $_counter',
+              'And now these three remain: faith, hope and love. But the greatest of these is love.',
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 15,
               ),
+              textAlign: TextAlign.center,
             ),
             StreamBuilder(
               stream: authProvider.matchingState(),
@@ -111,28 +108,27 @@ class _MainPageState extends State<MainPage> {
                   else{
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pushNamed(context, '/chat');});
-                    return ElevatedButton(
-                      child: Text('Chatting matched!'),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.blue),
-                        padding: MaterialStateProperty.all(
-                          EdgeInsets.all(10.0),
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20.0), // Add vertical padding
+                      child: ElevatedButton(
+                        child: Text('Go to Chat Room!'),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.blue),
+                          padding: MaterialStateProperty.all(
+                            EdgeInsets.all(10.0),
+                          ),
+                          overlayColor: MaterialStateProperty.all(Colors.black),
                         ),
-                        overlayColor: MaterialStateProperty.all(Colors.black),
-                      ), onPressed: () {  },
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/chat');
+                        },
+                      ),
                     );
-                    
                   }
                 }
               }) 
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async{authProvider.handleSignOut();},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );// This trailing comma makes auto-formatting nicer for build methods.
   }
