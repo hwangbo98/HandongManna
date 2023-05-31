@@ -27,14 +27,19 @@ class ChatProvider {
     return firebaseFirestore.collection(collectionPath).doc(docPath).update(dataNeedUpdate);
   }
 
-  Stream<QuerySnapshot> getChatStream(String groupChatId, int limit) {
-    return firebaseFirestore
+  Stream<QuerySnapshot> getChatStream(String groupChatId, int limit, DocumentSnapshot? startAfter) {
+    Query query = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(groupChatId)
         .collection(groupChatId)
         .orderBy(FirestoreConstants.timestamp, descending: true)
-        .limit(limit)
-        .snapshots();
+        .limit(limit);
+
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
+    }
+
+    return query.snapshots();
   }
 
   void sendMessage(String content, int type, String groupChatId, String currentUserId, String peerId) {

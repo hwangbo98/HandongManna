@@ -16,6 +16,7 @@ import 'package:handong_manna/models/models.dart';
 import 'package:handong_manna/pages/chat_profile_page.dart';
 import 'package:handong_manna/providers/providers.dart';
 import 'package:provider/provider.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 
 String randomString() {
@@ -38,20 +39,26 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  QueryDocumentSnapshot? _lastDocument;
   final List<types.Message> _messages = [];
   types.User _user = const types.User(id: "");
   int _messageCount = 0;
 
   String groupChatId = "";
-  final int _limit = 20;
+  final int _limit = 30;
 
   String username = randomName();
   ChatProvider? chatProvider;
 
+  final AutoScrollController _scrollController = AutoScrollController();
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
+
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
+
     WidgetsBinding.instance?.addPostFrameCallback((_) async { 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       var userId = authProvider.getUserFirebaseId();
@@ -60,6 +67,32 @@ class _ChatPageState extends State<ChatPage> {
         await setGroupChatId(userId);
       }
     });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.atEdge) {
+        if (_scrollController.position.pixels == 0 && !_isLoading) {
+          print('Chat list scolled to top');
+          _loadMoreMessages();
+        }
+      }
+    });
+  }
+
+  void _loadMoreMessages() async {
+    if (_lastDocument != null && !_isLoading) {
+      _isLoading = true;
+      var newMessageDocs = await chatProvider!.getChatStream(groupChatId, _limit, _lastDocument).first;
+
+      setState(() {
+        _messages.addAll(newMessageDocs.docs.map((doc) {
+          final message = MessageChat.fromDocument(doc);
+          return message.toChatTypeMessage(_user);
+        }).toList());
+
+        _lastDocument = newMessageDocs.docs.last;
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> setGroupChatId(String userId) async {
@@ -232,6 +265,8 @@ class _ChatPageState extends State<ChatPage> {
 
             if (_user.id != "") {
               return Chat(
+                key: ValueKey(_messages.length),
+                scrollController: _scrollController,
                 bubbleBuilder: _bubbleBuilder,
                 theme: const DefaultChatTheme(
                   inputBackgroundColor: ColorPalette.weakWhite,
@@ -293,7 +328,7 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    return chatProvider.getChatStream(groupChatId, limit);
+    return chatProvider.getChatStream(groupChatId, limit, _lastDocument);
   }
 
   void _handleSendPressed(types.PartialText message) {
