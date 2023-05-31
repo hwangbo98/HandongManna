@@ -40,7 +40,7 @@ class MessageChat {
   types.Message toChatTypeMessage(types.User currentUser) {
     return types.TextMessage(
       id: timestamp, // Use the timestamp as the message ID
-      author: idFrom == currentUser.id ? currentUser : types.User(id: idTo),
+      author: types.User(id: idFrom),
       text: content,
       createdAt: int.parse(timestamp),
       updatedAt: int.parse(timestamp),
